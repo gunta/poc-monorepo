@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Deep Link Test</title>
+</head>
+<script src="deep-linker.js"></script>
+<link rel="stylesheet" href="https://unpkg.com/@picocss/pico@latest/css/pico.min.css">
+<style>
+    #not-installed {
+        display: none;
+        /*padding: 10px;*/
+        /*margin: 30px;*/
+    }
+</style>
+<body>
+<main class="container">
+
+    <section>
+        <h3>Non Existent setTimeout Button</h3>
+        <button id="nonexistent-timeout-button">Open Non-Existent App</button>
+
+        <kbd id="not-installed">⛔️ App not installed</kbd>
+    </section>
+
+    <hr/>
+
+    <section>
+        <h3>Slack Link</h3>
+        <a href="slack://open">Open Slack</a>
+
+        <h3>Slack Button</h3>
+        <button id="slack-button">Open Slack</button>
+
+        <h3>Non Existent App Button</h3>
+        <button id="nonexistent-button">Open Non-Existent App</button>
+
+        <h3>Non Existent Deep Linker Button</h3>
+        <button id="nonexistent-deeplinker-button">Open Non-Existent App</button>
+    </section>
+
+    <hr/>
+    <section>
+        <h3>getInstalledRelatedApps API</h3>
+        <a href="https://get-installed-apps.glitch.me">getInstalledRelatedApps Demo</a>
+    </section>
+</main>
+</body>
+<script>
+    document.getElementById("slack-button").onclick = function () {
+        window.open("slack://open");
+    };
+
+    document.getElementById("nonexistent-button").onclick = function () {
+        window.open("nonexistent://open");
+    };
+
+    document.getElementById("nonexistent-timeout-button").onclick = function () {
+        window.location = 'nonexistent://';
+        document.getElementById("nonexistent-timeout-button").setAttribute('aria-busy', true)
+        setTimeout(function () {
+            // window.location = 'fallback.html';
+            document.getElementById('not-installed').style.display = 'inline';
+            console.log("fallback")
+            document.getElementById("nonexistent-timeout-button").setAttribute('aria-busy', false)
+        }, 500);
+    };
+
+    document.getElementById("nonexistent-deeplinker-button").onclick = function () {
+        var linker = new DeepLinker({
+            onIgnored: function () {
+                console.log('browser failed to respond to the deep link');
+            },
+            onFallback: function () {
+                console.log('dialog hidden or user returned to tab');
+            },
+            onReturn: function () {
+                console.log('user returned to the page from the native app');
+            },
+        });
+
+        linker.openURL('nonexistent://open');
+    }
+
+</script>
+</html>
